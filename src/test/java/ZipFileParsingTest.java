@@ -13,7 +13,7 @@ import java.util.zip.ZipInputStream;
 
 public class ZipFileParsingTest {
 
-    private ClassLoader cl = ZipFileParsingTest.class.getClassLoader();
+    private final ClassLoader cl = ZipFileParsingTest.class.getClassLoader();
 
     @Test
     void zipFileParsingTest() throws Exception {
@@ -49,5 +49,52 @@ public class ZipFileParsingTest {
         Assertions.assertTrue(pdf.text.contains("HireDate"));
 
         tempPdf.deleteOnExit();
+    }
+
+    private void parseAndValidateCsv(ZipFile zip, ZipArchiveEntry entry) throws Exception {
+        System.out.println("Проверка CSV файла: " + entry.getName());
+
+        // Читаем CSV из ZIP
+        try (InputStream is = zip.getInputStream(entry);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+            // Проверяем, что CSV не пустой
+            String header = reader.readLine();
+            Assertions.assertNotNull(header, "CSV файл пустой");
+            // Проверяем наличие вкладок
+            String[] headers = header.split(",");
+            Assertions.assertArrayEquals(
+                    new String[]{"ID", "Name", "Age", "HireDate"},
+                    headers,
+                    "Заголовки CSV не соответствуют ожидаемым"
+            );
+
+        }
+    }
+
+    private void parseAndValidateXls(ZipFile zip, ZipArchiveEntry entry) throws Exception {
+        System.out.println("Проверка XLS файла: " + entry.getName());
+
+        // Извлекаем XLS из ZIP во временный файл
+        File tempXls = File.createTempFile("temp", ".xls");
+        try (InputStream is = zip.getInputStream(entry);
+             FileOutputStream fos = new FileOutputStream(tempXls)) {
+            is.transferTo(fos);
+        }
+
+        // Читаем XLS файл
+        try (InputStream is = new FileInputStream(tempXls);
+             Workbook workbook = new HSSFWorkbook(is)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            Assertions.assertNotNull(sheet, "Лист не найден в XLS файле");
+
+            // Проверяем заголовки
+            Row headerRow = sheet.getRow(0);
+            Assertions.assertNotNull(headerRow, "Заголовки не найдены");
+
+        } finally {
+            tempXls.deleteOnExit();
+        }
     }
 }
