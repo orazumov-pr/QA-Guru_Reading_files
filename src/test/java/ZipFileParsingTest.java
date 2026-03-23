@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -16,7 +17,8 @@ public class ZipFileParsingTest {
     private final ClassLoader cl = ZipFileParsingTest.class.getClassLoader();
 
     @Test
-    void zipFileParsingTest() throws Exception {
+    void zipFileListingTest() throws Exception {
+        // Тест для вывода списка файлов в архиве
         try (ZipInputStream zis = new ZipInputStream(
                 cl.getResourceAsStream("dataset.zip")
         )) {
@@ -25,6 +27,63 @@ public class ZipFileParsingTest {
             while ((entry = zis.getNextEntry()) != null) {
                 System.out.println(entry.getName());
             }
+        }
+    }
+
+    @Test
+    void pdfFileParsingTest() throws Exception {
+        // Тест для проверки PDF файла
+        try (ZipFile zip = new ZipFile(cl.getResource("dataset.zip").getFile())) {
+            Enumeration<ZipArchiveEntry> entries = zip.getEntries();
+            boolean pdfFound = false;
+
+            while (entries.hasMoreElements()) {
+                ZipArchiveEntry entry = entries.nextElement();
+                if (entry.getName().toLowerCase().endsWith(".pdf")) {
+                    pdfFound = true;
+                    parseAndValidatePdf(zip, entry);
+                }
+            }
+
+            Assertions.assertTrue(pdfFound, "PDF файл не найден в архиве");
+        }
+    }
+
+    @Test
+    void csvFileParsingTest() throws Exception {
+        // Тест для проверки CSV файла
+        try (ZipFile zip = new ZipFile(cl.getResource("dataset.zip").getFile())) {
+            Enumeration<ZipArchiveEntry> entries = zip.getEntries();
+            boolean csvFound = false;
+
+            while (entries.hasMoreElements()) {
+                ZipArchiveEntry entry = entries.nextElement();
+                if (entry.getName().toLowerCase().endsWith(".csv")) {
+                    csvFound = true;
+                    parseAndValidateCsv(zip, entry);
+                }
+            }
+
+            Assertions.assertTrue(csvFound, "CSV файл не найден в архиве");
+        }
+    }
+
+    @Test
+    void xlsFileParsingTest() throws Exception {
+        // Тест для проверки XLSX файла
+        try (ZipFile zip = new ZipFile(cl.getResource("dataset.zip").getFile())) {
+            Enumeration<ZipArchiveEntry> entries = zip.getEntries();
+            boolean xlsFound = false;
+
+            while (entries.hasMoreElements()) {
+                ZipArchiveEntry entry = entries.nextElement();
+                if (entry.getName().toLowerCase().endsWith(".xls")) {
+                    xlsFound = true;
+                    parseAndValidateXls(zip, entry);
+                }
+            }
+
+            Assertions.assertTrue(xlsFound, "XLS файл не найден в архиве");
         }
     }
 
