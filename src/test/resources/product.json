@@ -1,0 +1,28 @@
+{
+  "productId": "PRD-001",
+  "name": "Ноутбук",
+  "price": 79999.99,
+  "inStock": true,
+  "specifications": [
+    {
+      "name": "Процессор",
+      "value": "Intel Core i7-12700H"
+    },
+    {
+      "name": "Оперативная память",
+      "value": "16 GB"
+    },
+    {
+      "name": "SSD",
+      "value": "512 GB"
+    },
+    {
+      "name": "Экран",
+      "value": "15.6 дюймов, IPS"
+    },
+    {
+      "name": "Вес",
+      "value": "1.8 кг"
+    }
+  ]
+}
