@@ -22,8 +22,22 @@ public class JsonParsingTest {
     private void validateProduct(Product product) {
         System.out.println("Разобранный продукт: " + product);
 
+        // Проверяем основные поля
         Assertions.assertNotNull(product);
+        Assertions.assertEquals("PRD-001", product.getProductId());
+        Assertions.assertEquals("Ноутбук", product.getName());
+        Assertions.assertEquals(79999.99, product.getPrice(), 0.001);
+        Assertions.assertTrue(product.isInStock());
 
+        // Проверяем массив спецификаций
+        Assertions.assertNotNull(product.getSpecifications());
+        Assertions.assertEquals(5, product.getSpecifications().size());
+
+        // Выводим все спецификации
+        System.out.println("\nСпецификации продукта:");
+        for (Specification spec : product.getSpecifications()) {
+            System.out.println("  " + spec.getName() + ": " + spec.getValue());
+        }
     }
 
 
